@@ -1,6 +1,7 @@
 // constants
 const EMPTY_ARRAY = [];
 const EMPTY_STRING = "";
+const EMPTY_OBJECT = {};
 
 // get form elements
 const form = document.getElementById("dino-compare");
@@ -14,6 +15,17 @@ const grid = document.getElementById("grid");
 
 // variables
 let dinos = EMPTY_ARRAY;
+
+// helpers
+function shuffleArray(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+}
 
 // Create Dino factory
 function DinoFactory(dino) {
@@ -56,14 +68,18 @@ createDinos().then((dinoData) => {
 // Generate Tiles for each Dino in Array
 function generateTiles(humanData) {
   let tiles = EMPTY_ARRAY;
+  const randomizedDinoFacts = shuffleDinoFacts(humanData);
   // place the human tile at the centre.
   dinos.splice(4, 0, humanData);
   let fragment = document.createDocumentFragment();
 
-  dinos.forEach((dino) => {
+  dinos.forEach((dino, index) => {
     const speciesName = dino.species || humanData.name;
     const src = dino.species ? dino.species.toLowerCase() : "human";
-    const fact = dino.species && dino.species === 'Pigeon' ? 'All birds are Dinosaurs.': dino.fact;
+    const fact =
+      dino.species === "Pigeon"
+        ? "All birds are Dinosaurs."
+        : dino.fact && randomizedDinoFacts[index];
 
     const title = document.createElement("h4");
     title.textContent = speciesName;
@@ -74,7 +90,7 @@ function generateTiles(humanData) {
 
     const paragraph = document.createElement("p");
     paragraph.textContent = fact;
-    paragraph.style.fontSize = '0.8em';
+    paragraph.style.fontSize = "0.8em";
 
     const div = document.createElement("div");
     div.className = "grid-item";
@@ -115,14 +131,14 @@ function submitForm() {
   form.remove(); // can be also done by setting the display property.
 }
 
-function compareDiet(human, dino) {
+function compareDiet(human, dino = EMPTY_OBJECT) {
   return human.diet === dino.diet
     ? "This dino and you seem to prefer the same diet."
     : "This dino has a different diet preference than you.";
 }
 // Create Dino Compare Method 2
 // NOTE: Weight in JSON file is in lbs, height in inches.
-function compareWeight(human, dino) {
+function compareWeight(human, dino = EMPTY_OBJECT) {
   if (human.weight == dino.weight) {
     return "This dinosaur has the same weight as you.";
   } else if (human.weight < dino.weight) {
@@ -135,7 +151,7 @@ function compareWeight(human, dino) {
 }
 // Create Dino Compare Method 3
 // NOTE: Weight in JSON file is in lbs, height in inches.
-function compareHeight(human, dino) {
+function compareHeight(human, dino = EMPTY_OBJECT) {
   if (human.height == dino.height) {
     return "This dinosaur is the same height as you.";
   } else if (human.height < dino.height) {
@@ -147,6 +163,12 @@ function compareHeight(human, dino) {
       human.height - dino.height
     } inches shorter than you.`;
   }
+}
+
+function shuffleDinoFacts(humanData, dino) {
+  const facts = dinos.map((dino) => dino.fact);
+
+  return shuffleArray(facts);
 }
 
 // On button click, prepare and display infographic
