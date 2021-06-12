@@ -1,16 +1,19 @@
 // constants
 const EMPTY_ARRAY = [];
-const EMPTY_STRING = '';
+const EMPTY_STRING = "";
 
-// get form elements 
-const form = document.getElementById('dino-compare');    
-const name = document.getElementById('name');    
-const feet = document.getElementById('feet');    
-const inches = document.getElementById('inches');    
-const weight = document.getElementById('weight');    
-const diet = document.getElementById('diet');
-const compareBtn = document.getElementById('btn');
+// get form elements
+const form = document.getElementById("dino-compare");
+const name = document.getElementById("name");
+const feet = document.getElementById("feet");
+const inches = document.getElementById("inches");
+const weight = document.getElementById("weight");
+const diet = document.getElementById("diet");
+const compareBtn = document.getElementById("btn");
 const grid = document.getElementById("grid");
+
+// variables
+let dinos = EMPTY_ARRAY;
 
 // Create Dino factory
 function DinoFactory(dino) {
@@ -45,33 +48,106 @@ const createDinos = async () => {
   return dinoObjects;
 };
 
-let dinos = EMPTY_ARRAY;
-
 // Create Dino Objects
 createDinos().then((dinoData) => {
   dinos = dinoData;
 });
 
-// Create Human Object
+// Generate Tiles for each Dino in Array
+function generateTiles(humanData) {
+  let tiles = EMPTY_ARRAY;
+  // place the human tile at the centre.
+  dinos.splice(4, 0, humanData);
+  let fragment = document.createDocumentFragment();
 
-// Use IIFE to get human data from form
+  dinos.forEach((dino) => {
+    const speciesName = dino.species || humanData.name;
+    const src = dino.species ? dino.species.toLowerCase() : "human";
+    const fact = dino.species && dino.species === 'Pigeon' ? 'All birds are Dinosaurs.': dino.fact;
 
-// Create Dino Compare Method 1
-// NOTE: Weight in JSON file is in lbs, height in inches.
+    const title = document.createElement("h4");
+    title.textContent = speciesName;
 
+    const img = document.createElement("img");
+    img.src = `images/${src}.png`; // this would be a problem if the file name is different from species name.
+    img.alt = "tile";
+
+    const paragraph = document.createElement("p");
+    paragraph.textContent = fact;
+    paragraph.style.fontSize = '0.8em';
+
+    const div = document.createElement("div");
+    div.className = "grid-item";
+
+    div.appendChild(title);
+    div.appendChild(img);
+    div.appendChild(paragraph);
+
+    fragment.appendChild(div);
+  });
+
+  grid.appendChild(fragment);
+}
+
+// submit the form whenever compare me is clicked.
+function submitForm() {
+  // Use IIFE to get human data from form
+  const human = (function getHumanData() {
+    const heightInInches = Number(feet.value * 12 + inches.value);
+    const humanName = name.value || EMPTY_STRING;
+    const humanWeight = weight.value;
+    const humanDiet = diet.value;
+
+    // Create Human Object
+    const humanData = new HumanFactory(
+      humanName,
+      humanWeight,
+      heightInInches,
+      humanDiet
+    );
+    return humanData;
+  })();
+
+  // Add tiles to DOM
+  generateTiles(human);
+
+  // Remove form from screen
+  form.remove(); // can be also done by setting the display property.
+}
+
+function compareDiet(human, dino) {
+  return human.diet === dino.diet
+    ? "This dino and you seem to prefer the same diet."
+    : "This dino has a different diet preference than you.";
+}
 // Create Dino Compare Method 2
 // NOTE: Weight in JSON file is in lbs, height in inches.
-
+function compareWeight(human, dino) {
+  if (human.weight == dino.weight) {
+    return "This dinosaur has the same weight as you.";
+  } else if (human.weight < dino.weight) {
+    return `This dinosaur is ${dino.weight - human.weight} lbs more than you`;
+  } else {
+    return `This dinosaur is ${
+      human.weight - dino.weight
+    } lbs lesser than you.`;
+  }
+}
 // Create Dino Compare Method 3
 // NOTE: Weight in JSON file is in lbs, height in inches.
-
-// Generate Tiles for each Dino in Array
-
-// Add tiles to DOM
-
-// Remove form from screen
-compareBtn.addEventListener('click', ()=>{
-    form.remove();
-})
+function compareHeight(human, dino) {
+  if (human.height == dino.height) {
+    return "This dinosaur is the same height as you.";
+  } else if (human.height < dino.height) {
+    return `This dinosaur is ${
+      dino.height - human.height
+    } inches taller than you.`;
+  } else {
+    return `This dinosaur is ${
+      human.height - dino.height
+    } inches shorter than you.`;
+  }
+}
 
 // On button click, prepare and display infographic
+compareBtn.addEventListener("click", submitForm);
