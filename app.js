@@ -17,6 +17,7 @@ const grid = document.getElementById("grid");
 let dinos = EMPTY_ARRAY;
 
 // helpers
+// source: Durstenfeld shuffle algorithm
 function shuffleArray(array) {
   for (var i = array.length - 1; i > 0; i--) {
     var j = Math.floor(Math.random() * (i + 1));
@@ -148,14 +149,14 @@ function submitForm() {
   form.remove(); // can be also done by setting the display property.
 }
 
-function compareDiet(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
+function checkDiet(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
   return human.diet === dino.diet
     ? "This dino and you seem to prefer the same diet."
     : "This dino has a different diet preference than you.";
 }
 // Create Dino Compare Method 2
 // NOTE: Weight in JSON file is in lbs, height in inches.
-function compareWeight(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
+function checkWeight(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
   if (human.weight == dino.weight) {
     return "This dinosaur weighs same as you.";
   }
@@ -167,7 +168,7 @@ function compareWeight(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
 }
 // Create Dino Compare Method 3
 // NOTE: Weight in JSON file is in lbs, height in inches.
-function compareHeight(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
+function checkHeight(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
   if (human.height == dino.height) {
     return "This dinosaur has the same height as you.";
   }
