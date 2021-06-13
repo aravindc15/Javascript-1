@@ -27,6 +27,19 @@ function shuffleArray(array) {
   return array;
 }
 
+function validateForm() {
+  if (
+    name.value.trim().length === 0 ||
+    weight.value.length === 0 ||
+    diet.value.length === 0 ||
+    (feet.value.length == 0 && inches.value.length == 0)
+  ) {
+    alert("Please complete all the fields in the form.");
+    return false;
+  }
+  return true;
+}
+
 // Create Dino factory
 function DinoFactory(dino) {
   return {
@@ -107,6 +120,10 @@ function generateTiles(humanData) {
 
 // submit the form whenever compare me is clicked.
 function submitForm() {
+  const isFormValid = validateForm();
+
+  if (!isFormValid) return;
+
   // Use IIFE to get human data from form
   const human = (function getHumanData() {
     const heightInInches = Number(feet.value * 12 + inches.value);
@@ -131,38 +148,33 @@ function submitForm() {
   form.remove(); // can be also done by setting the display property.
 }
 
-function compareDiet(human, dino = EMPTY_OBJECT) {
+function compareDiet(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
   return human.diet === dino.diet
     ? "This dino and you seem to prefer the same diet."
     : "This dino has a different diet preference than you.";
 }
 // Create Dino Compare Method 2
 // NOTE: Weight in JSON file is in lbs, height in inches.
-function compareWeight(human, dino = EMPTY_OBJECT) {
+function compareWeight(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
   if (human.weight == dino.weight) {
-    return "This dinosaur has the same weight as you.";
-  } else if (human.weight < dino.weight) {
-    return `This dinosaur is ${dino.weight - human.weight} lbs more than you`;
-  } else {
-    return `This dinosaur is ${
-      human.weight - dino.weight
-    } lbs lesser than you.`;
+    return "This dinosaur weighs same as you.";
   }
+  if (human.weight < dino.weight) {
+    return "This dinosaur weighs more than you";
+  }
+
+  return "This dinosaur weighs lesser than you.";
 }
 // Create Dino Compare Method 3
 // NOTE: Weight in JSON file is in lbs, height in inches.
-function compareHeight(human, dino = EMPTY_OBJECT) {
+function compareHeight(human = EMPTY_OBJECT, dino = EMPTY_OBJECT) {
   if (human.height == dino.height) {
-    return "This dinosaur is the same height as you.";
-  } else if (human.height < dino.height) {
-    return `This dinosaur is ${
-      dino.height - human.height
-    } inches taller than you.`;
-  } else {
-    return `This dinosaur is ${
-      human.height - dino.height
-    } inches shorter than you.`;
+    return "This dinosaur has the same height as you.";
   }
+  if (human.height < dino.height) {
+    return "This dinosaur is taller than you.";
+  }
+  return "This dinosaur is shhorter than you.";
 }
 
 function shuffleDinoFacts(humanData, dino) {
